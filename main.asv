@@ -6,7 +6,7 @@ clc
 addpath(genpath(pwd))
 
 %% Complementary filtering
-ft0 = [30 30];
+ft0 = [10 10];
 filt_order = 5;
 
 % High pass
@@ -46,21 +46,21 @@ title('Initialization')
 ft = runOPTIM_comp_no_const(ft0)
 
 %% Optimization output 
-[BH, AH, KH] = butter(5, ft(1), "high", "s"); 
-[BL, AL, KL] = butter(5, ft(2),  "low", "s");
+[Bh, Ah, kh] = butter(filt_order, ft(1), "high", "s");
+[Bl, Al, kl] = butter(filt_order, ft(2),  "low", "s");
 
-[Bh, Ah] = zp2tf(BH, AH, KH);
-[Bl, Al] = zp2tf(BL, AL, KL);
+tfH = zp2sos(Bh, Ah, kh);
+tfL = zp2sos(Bl, Al, kl);
 
-tfH = tf(Bh, Ah);
-tfL = tf(Bl, Al);
+%tfH = tf(Bh, Ah);
+%tfL = tf(Bl, Al);
 
 n_p = 10000;
 err = 1e2/n_p;
 w   = logspace(0,2,n_p);
 
-[magH,~] = bode(tfH,w);
-[magL,~] = bode(tfL,w);
+[magH,phaseH] = bode(tfH,w);
+[magL,phaseL] = bode(tfL,w);
 
 magH_db = mag2db(magH);
 magL_db = mag2db(magL);
